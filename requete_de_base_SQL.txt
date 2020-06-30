@@ -1,0 +1,176 @@
+	Requêtes simple 
+
+requêtes de selection : SELECT
+Eviter les doublons : DISTINCT 
+renommer une colonne : AS
+Trier les résultats : ORDER BY
+Limiter le nombre de lignes de résultat : TOP/LIMIT
+Restreindre les résultats : WHERE , IN , AND , OR , BETWEEN
+
+
+
+sudo mysql
+
+show databases
+
+create simplon ;
+
+show database ;
+
+use simplon ;
+
+source /home/dev/Downloads/jeux_video.sql ;
+
+show tables ;
+
+show columns from jeux_video ;
+
+| Field            | Type         | Null | Key | Default | Extra          |
++------------------+--------------+------+-----+---------+----------------+
+| ID               | int unsigned | NO   | MUL | NULL    | auto_increment |
+| nom              | varchar(255) | NO   |     | NULL    |                |
+| possesseur       | varchar(255) | NO   |     | NULL    |                |
+| console          | varchar(255) | NO   |     | NULL    |                |
+| prix             | double       | NO   |     | 0       |                |
+| nbre_joueurs_max | int          | NO   |     | 0       |                |
+| commentaires     | text         | NO   |     | NULL    |                |
++------------------+--------------+------+-----+---------+--
+1)
+select nom,console from jeux_video;
+
+2)
+SELECT nom FROM jeux_video WHERE console = 'SuperNES' ORDER BY nom;
+
+Aladin             
+Super Mario Bros 3
+Yoshi's Island
+3)
+SELECT possesseur FROM jeux_video WHERE nom = 'Street Fighter 2';
+
+
+
+Patrick
+
+4)
+SELECT nom,console,prix  FROM jeux_video ORDER BY prix ASC LIMIT 4;
+
+| Sonic            | Megadrive |    2 |
+| The Rocketeer    | NES       |    2 |
+| Super Mario Bros | NES       |    4 |
+| Tetris           | Gameboy   |    5 |
+
+
+5)
+SELECT nom,possesseur FROM jeux_video WHERE possesseur LIKE '%O%';
++-------------------------------------------+------------+
+| nom                                       | possesseur |
++-------------------------------------------+------------+
+| Super Mario Bros                          | Florent    |
+| Zelda : ocarina of time                   | Florent    |
+| Mario Kart 64                             | Florent    |
+| Yoshi's Island                            | Florent    |
+| Commandos 3                               | Florent    |
+| Pokemon Rubis                             | Florent    |
+| SSX 3                                     | Florent    |
+| Time Crisis 3                             | Florent    |
+| Diablo                                    | Florent    |
+| Gundam Battle Assault 2                   | Florent    |
+| Spider-Man                                | Florent    |
+| Tetris                                    | Florent    |
+| Sydney 2000                               | Florent    |
+| Crazy Taxi                                | Florent    |
+| Qui Veut Gagner Des Millions              | Florent    |
+| Taxi 3                                    | Corentin   |
+| Indiana Jones Et Le Tombeau De L'Empereur | Florent    |
+| Half-Life                                 | Corentin   |
+| Rollercoaster Tycoon                      | Florent    |
++-------------------------------------------+------------+
+
+6)
+SELECT nom FROM jeux_video WHERE console = 'PC' AND nbre_joueurs_max BETWEEN 4 AND 12 ;
++-------------+
+| nom         |
++-------------+
+| Commandos 3 |
+| Starcraft   |
+| Homeworld 2 |
++-------------+
+
+
+7)
+SELECT DISTINCT console FROM jeux_video ;
++-------------+
+| console     |
++-------------+
+| NES         |
+| Megadrive   |
+| Nintendo 64 |
+| GameCube    |
+| Xbox        |
+| PC          |
+| SuperNES    |
+| PS2         |
+| GBA         |
+| PS          |
+| Gameboy     |
+| Dreamcast   |
++-------------+
+
+8)
+SELECT DISTINCT console, MAX(prix) FROM jeux_video GROUP BY console HAVING MAX(prix) <15 ;
++----------+-----------+
+| console  | MAX(prix) |
++----------+-----------+
+| NES      |         7 |
+| SuperNES |        10 |
+| Gameboy  |         5 |
++----------+-----------+
+
+9)
+SELECT DISTINCT console FROM jeux_video GROUP BY console HAVING MAX(nbre_joueurs_max) <=4 ;
++-------------+
+| console     |
++-------------+
+| NES         |
+| Megadrive   |
+| Nintendo 64 |
+| GameCube    |
+| SuperNES    |
+| PS2         |
+| GBA         |
+| PS          |
+| Gameboy     |
+| Dreamcast   |
++-------------+
+
+10)
+SELECT nom,possesseur FROM jeux_video WHERE nom LIKE 'B%' or nom LIKE 'F%' AND possesseur LIKE '%e%' ;
++---------+------------+
+| nom     | possesseur |
++---------+------------+
+| FIFA 64 | Michel     |
+| F-ZERO  | Mathieu    |
++---------+------------+
+
+où 
+
+SELECT nom,possesseur FROM jeux_video WHERE possesseur LIKE '%e%' AND ( nom LIKE 'B%' or nom LIKE 'F%') ;
++---------+------------+
+| nom     | possesseur |
++---------+------------+
+| FIFA 64 | Michel     |
+| F-ZERO  | Mathieu    |
++---------+------------+
+
+ATTENTION !  Dans le dernier exemple on peut voir l'erreur produit par le AND ('%e%' and 'B%') or 'F%' à bien prendre en compte.
+
+SELECT nom,possesseur FROM jeux_video WHERE possesseur LIKE '%e%' AND nom LIKE 'B%' or nom LIKE 'F%' ;
++-----------------+------------+
+| nom             | possesseur |
++-----------------+------------+
+| Final Fantasy X | Patrick    |
+| FIFA 64         | Michel     |
+| F-ZERO          | Mathieu    |
++-----------------+------------+
+
+
